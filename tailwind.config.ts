@@ -9,6 +9,9 @@ export default {
                 sans: ["var(--font-geist-sans)", ...fontFamily.sans],
                 grotesk: ["PowerGrotesk", ...fontFamily.sans],
             },
+            colors: {
+                accent: "rgb(255, 84, 0)",
+            },
         },
     },
     plugins: [],
