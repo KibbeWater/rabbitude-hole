@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     },
                 }}
             >
-                <body className="flex h-full flex-col bg-black pt-20">
+                <body className="flex h-full flex-col bg-black pt-20 text-white">
                     <Navbar className="absolute left-0 right-0 top-0 h-20" />
                     <TRPCReactProvider>{children}</TRPCReactProvider>
                 </body>

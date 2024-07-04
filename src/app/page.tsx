@@ -1,4 +1,6 @@
-import { SignedIn, SignedOut } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
+import Link from "next/link";
+
 import BouncingRabbit from "~/components/BouncingRabbit";
 
 export default async function Home() {
@@ -11,12 +13,19 @@ export default async function Home() {
                 </div>
             </div>
             <SignedIn>
-                <button className="bg-accent hover:bg-accent/80 rounded-2xl px-4 py-2 font-grotesk text-white transition-all duration-300">
+                <Link
+                    href={"/dashboard/journal"}
+                    className="bg-accent hover:bg-accent/80 rounded-2xl px-4 py-2 font-grotesk text-white transition-all duration-300"
+                >
                     go to your account
-                </button>
+                </Link>
             </SignedIn>
             <SignedOut>
-                <button className="bg-accent rounded-2xl px-4 py-2 font-grotesk text-white">join rabbitude</button>
+                <SignInButton mode={"modal"}>
+                    <button className="bg-accent hover:bg-accent/80 rounded-2xl px-4 py-2 font-grotesk text-white transition-all duration-300">
+                        join rabbitude
+                    </button>
+                </SignInButton>
             </SignedOut>
         </main>
     );

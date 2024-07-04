@@ -26,7 +26,7 @@ export default function Navbar({ className }: { className?: string }) {
                 </div>
                 <div className="text-semibold flex items-center gap-4 font-grotesk text-base text-white">
                     <SignedOut>
-                        <SignInButton />
+                        <SignInButton mode="modal" />
                         {/* <Link href="/auth/signin" className="text-white">
                         Sign In
                     </Link>
