@@ -7,11 +7,13 @@
  * need to use are documented accordingly near the end.
  */
 
+import { getAuth } from "@clerk/nextjs/server";
 import { initTRPC, TRPCError } from "@trpc/server";
+import { type NextRequest } from "next/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { getServerAuthSession } from "~/server/auth";
+//import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
 
 /**
@@ -26,15 +28,11 @@ import { db } from "~/server/db";
  *
  * @see https://trpc.io/docs/server/context
  */
-export const createTRPCContext = async (opts: { headers: Headers }) => {
-    const session = await getServerAuthSession();
-
-    return {
-        db,
-        session,
-        ...opts,
-    };
-};
+export const createTRPCContext = async (opts: { req: NextRequest; headers: Headers }) => ({
+    db,
+    auth: getAuth(opts.req),
+    ...{ headers: opts.headers },
+});
 
 /**
  * 2. INITIALIZATION
@@ -50,10 +48,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
             ...shape,
             data: {
                 ...shape.data,
-                zodError:
-                    error.cause instanceof ZodError
-                        ? error.cause.flatten()
-                        : null,
+                zodError: error.cause instanceof ZodError ? error.cause.flatten() : null,
             },
         };
     },
@@ -97,14 +92,14 @@ export const publicProcedure = t.procedure;
  *
  * @see https://trpc.io/docs/procedures
  */
-export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
-    if (!ctx.session || !ctx.session.user) {
+const isAuthed = t.middleware(({ next, ctx }) => {
+    if (!ctx.auth.userId) {
         throw new TRPCError({ code: "UNAUTHORIZED" });
     }
     return next({
         ctx: {
-            // infers the `session` as non-nullable
-            session: { ...ctx.session, user: ctx.session.user },
+            auth: ctx.auth,
         },
     });
 });
+export const protectedProcedure = t.procedure.use(isAuthed);

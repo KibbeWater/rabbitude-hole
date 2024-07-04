@@ -1,7 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 
-export default async function Navbar({ className }: { className?: string }) {
+export default function Navbar({ className }: { className?: string }) {
     return (
         <>
             <div className={["flex items-center justify-between bg-black px-4", className].join(" ")}>
@@ -21,13 +24,19 @@ export default async function Navbar({ className }: { className?: string }) {
                         <p></p>
                     </div> */}
                 </div>
-                <div className="text-semibold flex items-center gap-4 font-grotesk text-base">
-                    <Link href="/auth/signin" className="text-white">
+                <div className="text-semibold flex items-center gap-4 font-grotesk text-base text-white">
+                    <SignedOut>
+                        <SignInButton />
+                        {/* <Link href="/auth/signin" className="text-white">
                         Sign In
                     </Link>
                     <Link href="/auth/signup" className="text-white">
                         Sign Up
-                    </Link>
+                    </Link> */}
+                    </SignedOut>
+                    <SignedIn>
+                        <UserButton />
+                    </SignedIn>
                 </div>
             </div>
         </>
