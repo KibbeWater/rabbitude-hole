@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+    font-family: "PowerGrotesk";
+    src:
+        url("/assets/fonts/PowerGrotesk-Variable.woff2") format("woff2"),
+        url("/assets/fonts/PowerGrotesk-Variable.ttf") format("truetype");
+    text-rendering: optimizeLegibility;
+}
