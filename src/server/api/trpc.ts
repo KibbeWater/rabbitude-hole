@@ -7,7 +7,7 @@
  * need to use are documented accordingly near the end.
  */
 
-import { getAuth } from "@clerk/nextjs/server";
+import { type ClerkMiddlewareAuthObject, getAuth } from "@clerk/nextjs/server";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { type NextRequest } from "next/server";
 import superjson from "superjson";
@@ -28,11 +28,12 @@ import { db } from "~/server/db";
  *
  * @see https://trpc.io/docs/server/context
  */
-export const createTRPCContext = async (opts: { req: NextRequest; headers: Headers }) => ({
-    db,
-    auth: getAuth(opts.req),
-    ...{ headers: opts.headers },
-});
+export const createTRPCContext = async (opts: { req: NextRequest; headers: Headers }) => {
+    return { db, auth: getAuth(opts.req), ...{ headers: opts.headers } };
+};
+export const createTRPCContextServer = async (opts: { auth: ClerkMiddlewareAuthObject; headers: Headers }) => {
+    return { db, ...opts };
+};
 
 /**
  * 2. INITIALIZATION

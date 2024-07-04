@@ -1,5 +1,5 @@
-import { relations, sql } from "drizzle-orm";
-import { index, int, primaryKey, sqliteTableCreator, text } from "drizzle-orm/sqlite-core";
+import { sql } from "drizzle-orm";
+import { index, int, sqliteTableCreator, text } from "drizzle-orm/sqlite-core";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
