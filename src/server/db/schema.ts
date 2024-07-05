@@ -9,17 +9,21 @@ import { index, int, sqliteTableCreator, text } from 'drizzle-orm/sqlite-core';
  */
 export const createTable = sqliteTableCreator((name) => `rabbitude-hole_${name}`);
 
-export const posts = createTable(
-    'post',
+export const devices = createTable(
+    'device',
     {
         id: int('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
-        name: text('name', { length: 256 }),
+        userId: text('user_id', { length: 32 }).unique().notNull(),
+        imei: text('imei', { length: 256 }).unique().notNull(),
+        accountKey: text('account_key', { length: 64 }).unique().notNull(),
         createdAt: int('created_at', { mode: 'timestamp' })
             .default(sql`CURRENT_TIMESTAMP`)
             .notNull(),
         updatedAt: int('updatedAt', { mode: 'timestamp' }),
     },
     (example) => ({
-        nameIndex: index('name_idx').on(example.name),
+        imeiIndex: index('imei_idx').on(example.imei),
+        userIndex: index('user_idx').on(example.userId),
+        accountKeyIndex: index('account_key_idx').on(example.accountKey),
     }),
 );
