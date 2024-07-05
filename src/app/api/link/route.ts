@@ -28,7 +28,7 @@ async function linkDevice(req: NextRequest) {
     }
 
     // _rabbitudeWsUrl is passed by the rabbitude-launcher but is not used atm
-    const { code, userId, deviceId, _rabbitudeWsUrl } = query.data;
+    const { code, userId, deviceId /* , _rabbitudeWsUrl */ } = query.data;
 
     const validLinkingCode = generateLinkingCode(userId);
 
