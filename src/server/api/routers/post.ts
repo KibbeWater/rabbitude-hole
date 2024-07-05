@@ -1,4 +1,4 @@
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from '~/server/api/trpc';
 
 export const postRouter = createTRPCRouter({
     getLatest: publicProcedure.query(({ ctx }) => {
@@ -8,6 +8,6 @@ export const postRouter = createTRPCRouter({
     }),
 
     getSecretMessage: protectedProcedure.query(() => {
-        return "you can now see this secret message!";
+        return 'you can now see this secret message!';
     }),
 });

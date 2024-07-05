@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import Image from "next/image";
+import Image from 'next/image';
 
-import RabbitudeLogo from "~/assets/rabbitude.png";
+import RabbitudeLogo from '~/assets/rabbitude.png';
 
 export default function BouncingRabbit({ size }: { size: number }) {
     return (
-        <div className="bouncing-rabbit">
+        <div className='bouncing-rabbit'>
             <style jsx>{`
                 .bouncing-rabbit {
                     animation: bounce 3s infinite ease-in-out;
@@ -22,7 +22,7 @@ export default function BouncingRabbit({ size }: { size: number }) {
                     }
                 }
             `}</style>
-            <Image src={RabbitudeLogo} alt="Rabbitude Logo" width={size} height={size} />
+            <Image src={RabbitudeLogo} alt='Rabbitude Logo' width={size} height={size} />
         </div>
     );
 }

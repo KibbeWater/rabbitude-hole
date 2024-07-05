@@ -7,14 +7,14 @@
  * need to use are documented accordingly near the end.
  */
 
-import { type ClerkMiddlewareAuthObject, getAuth } from "@clerk/nextjs/server";
-import { initTRPC, TRPCError } from "@trpc/server";
-import { type NextRequest } from "next/server";
-import superjson from "superjson";
-import { ZodError } from "zod";
+import { type ClerkMiddlewareAuthObject, getAuth } from '@clerk/nextjs/server';
+import { initTRPC, TRPCError } from '@trpc/server';
+import { type NextRequest } from 'next/server';
+import superjson from 'superjson';
+import { ZodError } from 'zod';
 
 //import { getServerAuthSession } from "~/server/auth";
-import { db } from "~/server/db";
+import { db } from '~/server/db';
 
 /**
  * 1. CONTEXT
@@ -95,7 +95,7 @@ export const publicProcedure = t.procedure;
  */
 const isAuthed = t.middleware(({ next, ctx }) => {
     if (!ctx.auth.userId) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
     }
     return next({
         ctx: {

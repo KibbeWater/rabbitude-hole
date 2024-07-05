@@ -1,16 +1,16 @@
-import { type Config } from "tailwindcss";
-import { fontFamily } from "tailwindcss/defaultTheme";
+import { type Config } from 'tailwindcss';
+import { fontFamily } from 'tailwindcss/defaultTheme';
 
 export default {
-    content: ["./src/**/*.tsx"],
+    content: ['./src/**/*.tsx'],
     theme: {
         extend: {
             fontFamily: {
-                sans: ["var(--font-geist-sans)", ...fontFamily.sans],
-                grotesk: ["PowerGrotesk", ...fontFamily.sans],
+                sans: ['var(--font-geist-sans)', ...fontFamily.sans],
+                grotesk: ['PowerGrotesk', ...fontFamily.sans],
             },
             colors: {
-                accent: "rgb(255, 84, 0)",
+                accent: 'rgb(255, 84, 0)',
             },
         },
     },
