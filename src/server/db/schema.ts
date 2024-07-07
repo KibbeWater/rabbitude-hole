@@ -19,11 +19,45 @@ export const devices = createTable(
         createdAt: int('created_at', { mode: 'timestamp' })
             .default(sql`CURRENT_TIMESTAMP`)
             .notNull(),
-        updatedAt: int('updatedAt', { mode: 'timestamp' }),
     },
     (example) => ({
         imeiIndex: index('imei_idx').on(example.imei),
         userIndex: index('user_idx').on(example.userId),
         accountKeyIndex: index('account_key_idx').on(example.accountKey),
+    }),
+);
+
+export const journalEntries = createTable(
+    'journal_entry',
+    {
+        id: int('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+        userId: text('user_id', { length: 32 }).notNull(),
+        deviceId: int('device_id', { mode: 'number' }).notNull(),
+        createdAt: int('created_at', { mode: 'timestamp' })
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+        updatedAt: int('updatedAt', { mode: 'timestamp' }),
+    },
+    (example) => ({
+        userIndex: index('user_idx').on(example.userId),
+        deviceIndex: index('device_idx').on(example.deviceId),
+        deviceUserIndex: index('device_user_idx').on(example.deviceId, example.userId),
+    }),
+);
+
+export const journalResources = createTable(
+    'journal_resource',
+    {
+        id: int('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+        journalEntryId: int('journal_entry_id', { mode: 'number' }).notNull(),
+        type: int('type', { mode: 'number' }).notNull(),
+        url: text('url', { length: 256 }).notNull(),
+        createdAt: int('created_at', { mode: 'timestamp' })
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+        updatedAt: int('updatedAt', { mode: 'timestamp' }),
+    },
+    (example) => ({
+        journalEntryIndex: index('journal_entry_idx').on(example.journalEntryId),
     }),
 );
