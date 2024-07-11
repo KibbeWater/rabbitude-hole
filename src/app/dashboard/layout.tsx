@@ -1,7 +1,7 @@
 export default async function DashLayout({ children }: { children: React.ReactNode }) {
     return (
-        <main className='flex flex-col items-center pt-16'>
-            <div className='container'>{children}</div>
+        <main className='flex min-h-full flex-col items-center pt-16'>
+            <div className='container flex min-h-full justify-center'>{children}</div>
         </main>
     );
 }

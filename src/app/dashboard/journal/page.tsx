@@ -9,51 +9,6 @@ const testData = [
         date: new Date(new Date().setHours(0, 0, 0, 0)),
         count: 3,
     },
-    {
-        // Get the day before the current day as a date, excluding the current time
-        date: new Date(new Date(new Date().setDate(new Date().getDate() - 1)).setHours(0, 0, 0, 0)),
-        count: 5,
-    },
-    {
-        // Get the day before the current day as a date, excluding the current time
-        date: new Date(new Date(new Date().setDate(new Date().getDate() - 2)).setHours(0, 0, 0, 0)),
-        count: 1,
-    },
-    {
-        // Get the day before the current day as a date, excluding the current time
-        date: new Date(new Date(new Date().setDate(new Date().getDate() - 3)).setHours(0, 0, 0, 0)),
-        count: 0,
-    },
-    {
-        // Get the day before the current day as a date, excluding the current time
-        date: new Date(new Date(new Date().setDate(new Date().getDate() - 4)).setHours(0, 0, 0, 0)),
-        count: 2,
-    },
-    {
-        // Get the day before the current day as a date, excluding the current time
-        date: new Date(new Date(new Date().setDate(new Date().getDate() - 5)).setHours(0, 0, 0, 0)),
-        count: 4,
-    },
-    {
-        // Get the day before the current day as a date, excluding the current time
-        date: new Date(new Date(new Date().setDate(new Date().getDate() - 6)).setHours(0, 0, 0, 0)),
-        count: 0,
-    },
-    {
-        // Get the day before the current day as a date, excluding the current time
-        date: new Date(new Date(new Date().setDate(new Date().getDate() - 7)).setHours(0, 0, 0, 0)),
-        count: 3,
-    },
-    {
-        // Get the day before the current day as a date, excluding the current time
-        date: new Date(new Date(new Date().setDate(new Date().getDate() - 8)).setHours(0, 0, 0, 0)),
-        count: 2,
-    },
-    {
-        // Get the day before the current day as a date, excluding the current time
-        date: new Date(new Date(new Date().setDate(new Date().getDate() - 9)).setHours(0, 0, 0, 0)),
-        count: 1,
-    },
 ];
 
 type JournalEntry = { date: Date; count: number };
@@ -106,10 +61,12 @@ function JournalGroup({ month, entries }: { month: string; entries: JournalEntry
         const widths = Object.entries(obj).reduce(
             (acc, [month, entries]) => {
                 const total = entries.reduce((acc, entry) => acc + entry.count, 0);
+                const min = Math.min(...entries.map((entry) => entry.count));
+                const max = Math.max(...entries.map((entry) => entry.count));
                 acc[month] = {
                     total,
-                    max: Math.max(...entries.map((entry) => entry.count)),
-                    min: Math.min(...entries.map((entry) => entry.count)),
+                    max,
+                    min: min == max ? 0 : min,
                     widths: [],
                 };
                 const widths = entries.map((entry, idx) => {
