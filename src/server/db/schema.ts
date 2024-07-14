@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import { index, int, sqliteTableCreator, text } from 'drizzle-orm/sqlite-core';
 
 /**
@@ -31,6 +31,8 @@ export const journalEntries = createTable(
     'journal_entry',
     {
         id: int('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+        entryType: text('type', { length: 32 }).notNull(),
+        text: text('text', { length: 4096 }),
         userId: text('user_id', { length: 32 }).notNull(),
         deviceId: int('device_id', { mode: 'number' }).notNull(),
         createdAt: int('created_at', { mode: 'timestamp' })
@@ -44,6 +46,10 @@ export const journalEntries = createTable(
         deviceUserIndex: index('device_user_idx').on(example.deviceId, example.userId),
     }),
 );
+
+export const journalRelations = relations(journalEntries, ({ many }) => ({
+    resources: many(journalResources),
+}));
 
 export const journalResources = createTable(
     'journal_resource',
@@ -61,3 +67,10 @@ export const journalResources = createTable(
         journalEntryIndex: index('journal_entry_idx').on(example.journalEntryId),
     }),
 );
+
+export const journalResourceRelations = relations(journalResources, ({ one }) => ({
+    entry: one(journalEntries, {
+        fields: [journalResources.journalEntryId],
+        references: [journalEntries.id],
+    }),
+}));

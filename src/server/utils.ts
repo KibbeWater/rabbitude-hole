@@ -21,3 +21,10 @@ export function generateLinkingCode(userId: string): { hash: string; expiration:
         expiration: timeUntilExpiration,
     };
 }
+
+// The client key is a hashed using sha256 from the string `${imei}_${accountKey}_${floor(timeInSeconds/10)}`
+export function generateBackendAuthToken(imei: string, deviceId: string) {
+    const currentTime = Math.floor(Date.now() / 10000);
+
+    return createHash('sha256').update(`${imei}_${deviceId}_${currentTime}`).digest('hex');
+}
