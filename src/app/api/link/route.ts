@@ -1,3 +1,4 @@
+import { clerkClient } from '@clerk/nextjs/server';
 import { waitUntil } from '@vercel/functions';
 import { randomBytes } from 'crypto';
 import type { NextRequest } from 'next/server';
@@ -47,14 +48,17 @@ async function linkDevice(req: NextRequest) {
     // Generate accountKey (random sha256 hash)
     const accountKey = randomBytes(32).toString('hex');
 
-    const res = await db
-        .insert(devices)
-        .values({
-            userId,
-            imei: deviceId,
-            accountKey,
-        })
-        .onConflictDoNothing();
+    const [res, user] = await Promise.all([
+        db
+            .insert(devices)
+            .values({
+                userId,
+                imei: deviceId,
+                accountKey,
+            })
+            .onConflictDoNothing(),
+        clerkClient().users.getUser(userId),
+    ]);
 
     if (res.rowsAffected === 0) return Response.json({ error: 'Device already linked' }, { status: 400 });
 
@@ -145,6 +149,8 @@ async function linkDevice(req: NextRequest) {
         // We assign the same userIds to comply with rabbits original rabbithole api
         actualUserId: userId,
         userId,
+        accountKey,
+        userName: user.username ?? 'unk',
     });
 }
 
