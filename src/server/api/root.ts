@@ -1,5 +1,6 @@
 import { deviceRouter } from '~/server/api/routers/device';
 import { createCallerFactory, createTRPCRouter } from '~/server/api/trpc';
+import { journalRouter } from './routers/journal';
 
 /**
  * This is the primary router for your server.
@@ -8,6 +9,7 @@ import { createCallerFactory, createTRPCRouter } from '~/server/api/trpc';
  */
 export const appRouter = createTRPCRouter({
     device: deviceRouter,
+    journal: journalRouter,
 });
 
 // export type definition of API

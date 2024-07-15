@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import DashboardHeader from '~/components/DashboardHeader';
 
 const testData = [
@@ -53,10 +53,14 @@ const adjacentMultiplier = 0.75;
 const heldMultiplier = 1;
 function JournalGroup({ month, entries }: { month: string; entries: JournalEntry[] }) {
     const [hovered, setHovered] = useState<number | null>(null);
+    const [elementRect, setElementRect] = useState<DOMRect | null>(null);
 
-    const containerRef = useRef<HTMLDivElement>(null);
+    const handleRect = useCallback((node: HTMLDivElement) => {
+        setElementRect(node?.getBoundingClientRect());
+    }, []);
+
     const groupedWidths = useMemo(() => {
-        const maxWidth = containerRef.current?.clientWidth ?? 0;
+        const maxWidth = elementRect?.width ?? 0;
         const obj = { [month]: entries };
         const widths = Object.entries(obj).reduce(
             (acc, [month, entries]) => {
@@ -86,7 +90,7 @@ function JournalGroup({ month, entries }: { month: string; entries: JournalEntry
         );
 
         return widths;
-    }, [month, entries, hovered]);
+    }, [month, entries, hovered, elementRect]);
 
     return (
         <div className='flex w-full grow-0'>
@@ -99,7 +103,7 @@ function JournalGroup({ month, entries }: { month: string; entries: JournalEntry
                     <DateItem date={entry.date} key={entry.date.toString()} />
                 ))}
             </div>
-            <div ref={containerRef} className='flex grow flex-col gap-2 pt-2'>
+            <div ref={handleRect} className='flex grow flex-col gap-2 pt-2'>
                 {entries.map((entry, idx) => (
                     <JournalBaseItem className='px-4' key={entry.date.toString()}>
                         <div

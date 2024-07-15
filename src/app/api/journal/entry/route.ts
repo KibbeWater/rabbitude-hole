@@ -1,16 +1,16 @@
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
+
 import { db } from '~/server/db';
 import { journalEntries } from '~/server/db/schema';
-import { type JournalTextEntry, textShape } from '~/types/journal';
+import { type JournalTextEntry, journalTypeSchema, textShape } from '~/types/journal';
 
 async function submitJournalEntry(req: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const data = await req.json();
-    const journalTypes = z.enum(['text', 'meeting', 'vision', 'note']);
 
     const bodySchema = z.object({
-        type: journalTypes,
+        type: journalTypeSchema,
         title: z.string(),
         data: z.string(),
     });
@@ -19,7 +19,6 @@ async function submitJournalEntry(req: NextRequest) {
     const accountKey: string | undefined = req.headers.get('account-key') ?? undefined;
 
     const body = bodySchema.safeParse(data);
-    console.log(body);
     if (!body.success) return Response.json({ error: body.error.format() }, { status: 400 });
 
     if (!deviceId || !accountKey) return Response.json({ error: 'Missing headers' }, { status: 400 });
@@ -51,17 +50,14 @@ async function submitJournalEntry(req: NextRequest) {
     const entry = await db
         .insert(journalEntries)
         .values({
-            entryType: entryData.type,
-            userId: device.userId,
             deviceId: device.id,
-
+            entryType: body.data.type,
             title: body.data.title,
             text: entryData.response,
-            metadata: { type: entryData.type, voice_mode: entryData.voice_mode, response: entryData.response },
+            metadata: entryData,
         })
-        .run();
-    if (entry.rowsAffected === 0) return Response.json({ error: 'Failed to create entry' }, { status: 500 });
-    else return Response.json({ success: true, id: Number(entry.lastInsertRowid) });
+        .returning({ insertedId: journalEntries.id });
+    return Response.json({ success: true, id: entry[entry.length - 1]?.insertedId ?? -1 });
 }
 
 export { submitJournalEntry as POST };

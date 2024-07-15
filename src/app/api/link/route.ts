@@ -56,11 +56,12 @@ async function linkDevice(req: NextRequest) {
                 imei: deviceId,
                 accountKey,
             })
-            .onConflictDoNothing(),
+            .onConflictDoNothing()
+            .returning({ insertedId: devices.id }),
         clerkClient().users.getUser(userId),
     ]);
 
-    if (res.rowsAffected === 0) return Response.json({ error: 'Device already linked' }, { status: 400 });
+    if (res.length !== 0) return Response.json({ error: 'Device already linked' }, { status: 400 });
 
     // We will return a response with the authentication information to resolve the request quickly
     // However, we still need to inform the server about our existence, we will use remaining time to connect and notify the backend of the dashboard URL

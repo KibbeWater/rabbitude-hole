@@ -4,9 +4,9 @@ export default function JournalOverviewSkeleton() {
     return (
         <div className='flex w-full flex-col gap-4 px-8'>
             <div className='flex justify-between'>
-                <div className='flex w-8/12 flex-col gap-2'>
-                    <SkeletonText className='h-6 w-full' />
-                    <SkeletonText className='h-6 w-4/12' />
+                <div className='flex w-7/12 flex-col gap-2'>
+                    <SkeletonText className='h-[30px] w-full' />
+                    <SkeletonText className='h-[30px] w-4/12 pt-[6px]' />
                 </div>
                 {/* Future icons */}
                 <div />
