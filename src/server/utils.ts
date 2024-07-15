@@ -1,6 +1,7 @@
 import { createHash } from 'crypto';
 
 import { env } from '~/env';
+import { type JournalTextEntry, textShape } from '~/types/journal';
 
 // Generate a linking code which expires after 10 seconds
 export function generateLinkingCode(userId: string): { hash: string; expiration: number } {
@@ -27,4 +28,10 @@ export function generateBackendAuthToken(imei: string, deviceId: string) {
     const currentTime = Math.floor(Date.now() / 10000);
 
     return createHash('sha256').update(`${imei}_${deviceId}_${currentTime}`).digest('hex');
+}
+
+export function getJournalTextMeta(data: unknown): JournalTextEntry | undefined {
+    const parsed = textShape.safeParse(data);
+    if (!parsed.success) return undefined;
+    return parsed.data;
 }

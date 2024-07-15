@@ -1,5 +1,5 @@
 import { relations, sql } from 'drizzle-orm';
-import { index, int, sqliteTableCreator, text } from 'drizzle-orm/sqlite-core';
+import { blob, index, int, sqliteTableCreator, text } from 'drizzle-orm/sqlite-core';
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -32,7 +32,9 @@ export const journalEntries = createTable(
     {
         id: int('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
         entryType: text('type', { length: 32 }).notNull(),
+        title: text('title', { length: 256 }),
         text: text('text', { length: 4096 }),
+        metadata: blob('metadata', { mode: 'json' }).$type<{ type: string; [key: string]: unknown }>(),
         userId: text('user_id', { length: 32 }).notNull(),
         deviceId: int('device_id', { mode: 'number' }).notNull(),
         createdAt: int('created_at', { mode: 'timestamp' })
@@ -41,7 +43,7 @@ export const journalEntries = createTable(
         updatedAt: int('updatedAt', { mode: 'timestamp' }),
     },
     (example) => ({
-        userIndex: index('user_idx').on(example.userId),
+        userIndex: index('journal_user_idx').on(example.userId),
         deviceIndex: index('device_idx').on(example.deviceId),
         deviceUserIndex: index('device_user_idx').on(example.deviceId, example.userId),
     }),
