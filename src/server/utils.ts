@@ -23,19 +23,12 @@ export function generateLinkingCode(userId: string): { hash: string; expiration:
     };
 }
 
-// The client key is a hashed using sha256 from the string `${imei}_${accountKey}_${floor(timeInSeconds/10)}`
-export function generateBackendAuthToken(imei: string, deviceId: string) {
+// The client key is a hashed using sha256 from the string `${imei}_${floor(timeInSeconds/10)}`
+export function generateBackendAuthToken(imei: string) {
     const utc = new Date().getTime();
     const currentTime = Math.floor(utc / 10000);
 
-    console.log('Current time', currentTime);
-    console.log({ imei, deviceId, currentTime });
-
-    console.log(`${imei}_${deviceId}_${currentTime}`);
-    const hash = createHash('sha256').update(`${imei}_${deviceId}_${currentTime}`).digest('hex');
-    console.log('Hash', hash);
-
-    return hash;
+    return createHash('sha256').update(`${imei}_${currentTime}`).digest('hex');
 }
 
 export function getJournalTextMeta(data: unknown): JournalTextEntry | undefined {

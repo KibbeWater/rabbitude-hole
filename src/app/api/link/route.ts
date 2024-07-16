@@ -75,18 +75,27 @@ async function linkDevice(req: NextRequest) {
             let resolved = false;
 
             ws.on('open', () => {
-                // return {global: {web_authenticate: {key: string, api_url: string}}}
-
                 ws.send(
                     JSON.stringify({
                         global: {
                             web_authenticate: {
-                                key: generateBackendAuthToken(deviceId, accountKey),
+                                key: generateBackendAuthToken(deviceId),
                                 api_url: env.VERCEL_URL + '/api/journal',
                             },
                         },
                     }),
                 );
+            });
+
+            ws.on('error', (err) => {
+                console.error('Failed to notify backend of dashboard URL', { userId, deviceId, error: err });
+                ws.close();
+                resolve();
+            });
+
+            ws.on('close', () => {
+                console.error('Failed to notify backend of dashboard URL', { userId, deviceId, error: 'Closed' });
+                resolve();
             });
 
             ws.on('message', (data, isBinary) => {
