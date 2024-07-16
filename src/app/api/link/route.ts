@@ -8,7 +8,7 @@ import { env } from '~/env';
 
 import { db } from '~/server/db';
 import { devices } from '~/server/db/schema';
-import { generateLinkingCode } from '~/server/utils';
+import { generateBackendAuthToken, generateLinkingCode } from '~/server/utils';
 
 // Max Hobby plan function runtime duration, as per documented @ https://vercel.com/docs/functions/runtimes#max-duration
 export const maxDuration = 60; // 60 seconds
@@ -40,7 +40,7 @@ async function linkDevice(req: NextRequest) {
     const { code, userId, deviceId, _rabbitudeWsUrl } = query.data;
 
     const validLinkingCode = generateLinkingCode(userId);
-
+    console.log('Valid linking code', validLinkingCode);
     if (code !== validLinkingCode.hash) {
         return Response.json({ error: 'Invalid linking code' }, { status: 400 });
     }
@@ -60,18 +60,19 @@ async function linkDevice(req: NextRequest) {
             .returning({ insertedId: devices.id }),
         clerkClient().users.getUser(userId),
     ]);
-
-    if (res.length !== 0) return Response.json({ error: 'Device already linked' }, { status: 400 });
+    console.log(res);
+    if (res.length === 0) return Response.json({ error: 'Device already linked' }, { status: 400 });
 
     // We will return a response with the authentication information to resolve the request quickly
     // However, we still need to inform the server about our existence, we will use remaining time to connect and notify the backend of the dashboard URL
     waitUntil(
         new Promise<void>((resolve) => {
             // Runtime remaining
-            let remaining = maxDuration - (Date.now() - start);
+            let remaining = maxDuration * 1000 - (Date.now() - start);
             remaining -= 1000; // Give us a second headroom to finish up in worst case scenario
 
             const ws = new WebSocket(_rabbitudeWsUrl);
+            let resolved = false;
 
             ws.on('open', () => {
                 // return {global: {web_authenticate: {key: string, api_url: string}}}
@@ -80,8 +81,8 @@ async function linkDevice(req: NextRequest) {
                     JSON.stringify({
                         global: {
                             web_authenticate: {
-                                key: accountKey,
-                                api_url: env.VERCEL_URL,
+                                key: generateBackendAuthToken(deviceId, accountKey),
+                                api_url: env.VERCEL_URL + '/api/journal',
                             },
                         },
                     }),
@@ -133,12 +134,14 @@ async function linkDevice(req: NextRequest) {
                     return;
                 }
 
+                resolved = true;
                 console.log('Successfully notified backend of dashboard URL', { userId, deviceId });
                 ws.close();
                 resolve();
             });
 
             setTimeout(() => {
+                if (resolved) return;
                 console.error('Failed to notify backend of dashboard URL', { userId, deviceId, error: 'Timeout' });
                 ws.close();
                 resolve();
