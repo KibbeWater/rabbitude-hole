@@ -55,6 +55,7 @@ async function submitJournalEntry(req: NextRequest) {
             title: body.data.title,
             text: entryData.response,
             metadata: entryData,
+            userId: device.userId,
         })
         .returning({ insertedId: journalEntries.id });
     return Response.json({ success: true, id: entry[entry.length - 1]?.insertedId ?? -1 });

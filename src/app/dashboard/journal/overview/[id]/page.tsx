@@ -10,9 +10,9 @@ export default async function OverviewEntry({ params }: { params: { id: string }
     if (!entry) notFound();
 
     return (
-        <div className='flex w-full flex-col gap-4 px-8'>
+        <div className='flex w-full flex-col gap-4 overflow-hidden px-8'>
             <div className='flex justify-between'>
-                <div className='flex w-7/12 font-grotesk'>
+                <div className='flex w-7/12 overflow-hidden font-grotesk'>
                     <p className='text-3xl'>{entry.title}</p>
                 </div>
                 {/* Future icons */}

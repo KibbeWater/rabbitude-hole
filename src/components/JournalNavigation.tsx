@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useMemo } from 'react';
 
-import EyeIcon from '~/components/Icons/EyeIcon';
 import MagnifyingIcon from '~/components/Icons/MagnifyingGlass';
 import { getJournalTextMeta } from '~/server/utils';
 import { api } from '~/trpc/react';
@@ -14,12 +13,14 @@ function JournalEntry({
     active,
     title,
     description,
+    icon,
     time,
 }: {
     color: string;
     active: boolean;
     title: string;
     description: string;
+    icon?: JSX.Element;
     time: Date;
 }) {
     const timeLocale = time.toLocaleTimeString('default', {
@@ -31,7 +32,7 @@ function JournalEntry({
         <div className='flex w-full gap-3 px-8 py-4'>
             <div className='flex h-full w-8 flex-none px-1'>
                 <div className='size-6' style={{ color }}>
-                    <EyeIcon />
+                    {icon}
                 </div>
             </div>
             <div className='h-full w-4 pt-1'>
@@ -56,7 +57,7 @@ function JournalEntry({
 
 export default function JournalNavigation() {
     const { data } = api.journal.getEntries.useInfiniteQuery(
-        { limit: 20 },
+        {},
         {
             getNextPageParam: (lastPage) => lastPage.nextCursor,
         },
@@ -96,7 +97,7 @@ export default function JournalNavigation() {
                 </div>
             </div>
             {/* Placeholder */}
-            <div className='flex h-full w-full flex-col gap-12'>
+            <div className='flex h-full w-full flex-col gap-12 overflow-y-auto'>
                 {Object.entries(grouped).map(([month, entries]) => (
                     <div key={`journal-month-${month.toLowerCase()}`} className='flex w-full flex-col gap-6'>
                         <h2 className='font-grotesk text-2xl'>{month}</h2>
@@ -113,7 +114,7 @@ export default function JournalNavigation() {
                                             href={url}
                                             className={[
                                                 'cursor-pointer rounded-2xl transition-colors',
-                                                isActive && 'bg-red-500/10',
+                                                isActive && 'bg-white/10',
                                             ].join(' ')}
                                         >
                                             <JournalEntry
@@ -121,7 +122,7 @@ export default function JournalNavigation() {
                                                 description={textMeta?.response ?? ''}
                                                 time={entry.createdAt}
                                                 active={isActive}
-                                                color='#ef4444'
+                                                color='#fff'
                                             />
                                         </Link>
                                     );

@@ -36,6 +36,7 @@ export const journalEntries = createTable(
     {
         id: serial('id').primaryKey(),
         deviceId: integer('device_id').notNull(),
+        userId: varchar('user_id', { length: 32 }).notNull(),
         entryType: entryEnum('entry_type').notNull(),
         title: text('title'),
         text: text('text'),
@@ -44,6 +45,7 @@ export const journalEntries = createTable(
     },
     (example) => ({
         deviceIndex: index('device_idx').on(example.deviceId),
+        journalUserIndex: index('journal_user_idx').on(example.userId),
     }),
 );
 
