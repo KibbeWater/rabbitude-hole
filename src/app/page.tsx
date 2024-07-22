@@ -9,7 +9,7 @@ export default async function Home() {
             <div className='flex flex-col items-center gap-4'>
                 <BouncingRabbit size={256} />
                 <div className='flex justify-center'>
-                    <p className='font-grotesk text-2xl font-semibold text-white'>Don{"'"}t follow the white Rabbit</p>
+                    <p className='font-grotesk text-2xl font-normal text-white'>Don{"'"}t follow the white Rabbit</p>
                 </div>
             </div>
             <SignedIn>
