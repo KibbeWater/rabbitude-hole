@@ -11,6 +11,7 @@ export const env = createEnv({
         NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
         SECRET_KEY: z.string(),
         CLERK_SECRET_KEY: z.string(),
+        VERCEL_URL: z.string().url(),
     },
 
     /**
@@ -33,6 +34,7 @@ export const env = createEnv({
         SECRET_KEY: process.env.SECRET_KEY,
         CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
         NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+        VERCEL_URL: process.env.VERCEL_URL,
     },
     /**
      * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
