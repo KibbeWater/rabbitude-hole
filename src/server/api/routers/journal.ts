@@ -1,5 +1,5 @@
 import { clerkClient } from '@clerk/nextjs/server';
-import { and, desc, eq, gt } from 'drizzle-orm';
+import { and, count, desc, eq, gt, min, sql } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
@@ -14,26 +14,6 @@ export const journalRouter = createTRPCRouter({
             }),
         )
         .query(async ({ ctx, input: { limit, cursor } }) => {
-            /* const items = await ctx.db.query.journalEntries.findMany({
-                where: (entry, { eq, and, gt }) =>
-                    !cursor
-                        ? and(eq(devices.userId, ctx.auth.userId), eq(entry.deviceId, devices.id))
-                        : and(
-                              gt(entry.id, cursor),
-                              and(eq(devices.userId, ctx.auth.userId), eq(entry.deviceId, devices.id)),
-                          ),
-                with: {
-                    device: {
-                        columns: {
-                            id: true,
-                            userId: true,
-                        },
-                    },
-                },
-                limit: limit + 1, // Last item will be used to determine next cursor
-                offset: cursor ?? undefined,
-                orderBy: desc(journalEntries.createdAt),
-            }); */
             const items = await ctx.db
                 .select({
                     id: journalEntries.id,
@@ -82,5 +62,25 @@ export const journalRouter = createTRPCRouter({
         ]);
 
         return entry[0] ? { ...entry[0], deviceName: user.username } : undefined;
+    }),
+    getMonthly: protectedProcedure.query(async ({ ctx }) => {
+        const entries = await ctx.db
+            .select({
+                year: sql`date_part('year', ${journalEntries.createdAt})`.as('year'),
+                month: sql`date_part('month', ${journalEntries.createdAt})`.as('month'),
+                day: sql`date_part('day', ${journalEntries.createdAt})`.as('day'),
+                date: min(journalEntries.createdAt),
+                count: count(),
+            })
+            .from(journalEntries)
+            .leftJoin(devices, eq(journalEntries.deviceId, devices.id))
+            .where(eq(devices.userId, ctx.auth.userId))
+            .orderBy(desc(sql`year`), desc(sql`month`), desc(sql`day`))
+            .groupBy(sql`year`, sql`month`, sql`day`);
+
+        return entries.map((entry) => ({
+            date: entry.date!,
+            count: entry.count,
+        }));
     }),
 });

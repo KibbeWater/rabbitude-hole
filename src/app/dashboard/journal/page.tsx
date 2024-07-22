@@ -1,15 +1,9 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import DashboardHeader from '~/components/DashboardHeader';
-
-const testData = [
-    {
-        // Get the current day as a date, excluding the current time
-        date: new Date(new Date().setHours(0, 0, 0, 0)),
-        count: 3,
-    },
-];
+import { api } from '~/trpc/react';
 
 type JournalEntry = { date: Date; count: number };
 function groupByMonth(data: JournalEntry[]) {
@@ -26,8 +20,22 @@ function groupByMonth(data: JournalEntry[]) {
     return grouped;
 }
 
-function JournalBaseItem({ className, children, id }: { className?: string; children?: React.ReactNode; id?: string }) {
-    return (
+function JournalBaseItem({
+    className,
+    children,
+    id,
+    onClick,
+}: {
+    className?: string;
+    children?: React.ReactNode;
+    id?: string;
+    onClick?: () => void;
+}) {
+    return onClick !== undefined ? (
+        <button className={['flex h-4 items-center', className].join(' ')} onClick={onClick} id={id}>
+            {children}
+        </button>
+    ) : (
         <div className={['flex h-4 items-center', className].join(' ')} id={id}>
             {children}
         </div>
@@ -58,6 +66,8 @@ function JournalGroup({ month, entries }: { month: string; entries: JournalEntry
     const handleRect = useCallback((node: HTMLDivElement) => {
         setElementRect(node?.getBoundingClientRect());
     }, []);
+
+    const router = useRouter();
 
     const groupedWidths = useMemo(() => {
         const maxWidth = elementRect?.width ?? 0;
@@ -105,7 +115,11 @@ function JournalGroup({ month, entries }: { month: string; entries: JournalEntry
             </div>
             <div ref={handleRect} className='flex grow flex-col gap-2 pt-2'>
                 {entries.map((entry, idx) => (
-                    <JournalBaseItem className='px-4' key={entry.date.toString()}>
+                    <JournalBaseItem
+                        className='px-4'
+                        key={entry.date.toString()}
+                        onClick={() => router.push('/dashboard/journal/overview')}
+                    >
                         <div
                             style={{
                                 width: `${groupedWidths[month]?.widths[idx] ?? 0}px`,
@@ -122,7 +136,9 @@ function JournalGroup({ month, entries }: { month: string; entries: JournalEntry
 }
 
 export default function Journal() {
-    const grouped = useMemo(() => groupByMonth(testData), []);
+    const { data } = api.journal.getMonthly.useQuery();
+
+    const grouped = useMemo(() => (data ? groupByMonth(data) : []), [data]);
 
     return (
         <>
