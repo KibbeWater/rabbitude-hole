@@ -34,9 +34,6 @@ export default function Navbar({ className }: { className?: string }) {
                             rabbi<span className='transition-all duration-500 group-hover/logo:text-accent'>tude</span>
                         </Link>
                     </div>
-                    {/* <div>
-                        <p></p>
-                    </div> */}
                 </div>
                 <div className='text-semibold flex items-center gap-4 font-grotesk text-base text-white'>
                     <nav className='mr-4 flex gap-10 font-normal lowercase text-neutral-500'>
@@ -52,12 +49,6 @@ export default function Navbar({ className }: { className?: string }) {
                     </nav>
                     <SignedOut>
                         <SignInButton mode='modal' />
-                        {/* <Link href="/auth/signin" className="text-white">
-                        Sign In
-                    </Link>
-                    <Link href="/auth/signup" className="text-white">
-                        Sign Up
-                    </Link> */}
                     </SignedOut>
                     <SignedIn>
                         <UserButton />
